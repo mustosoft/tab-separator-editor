@@ -36,6 +36,11 @@ const PRESET_COLORS = [
   "#000000", // black
 ];
 
+const DEFAULT_TITLE = "Page Icon Editor";
+const DEFAULT_SHAPE = "circle";
+const DEFAULT_COLOR = "#3b82f6";
+const DEFAULT_CUSTOM_COLOR = "";
+
 function generateFavicon(shape: string, color: string): string {
   const size = 32;
   const center = size / 2;
@@ -135,18 +140,18 @@ function generateFavicon(shape: string, color: string): string {
 function getUrlParams() {
   if (typeof window === 'undefined') {
     return {
-      title: 'Page Icon Editor',
-      shape: 'circle',
-      color: '#3b82f6',
-      customColor: ''
+      title: DEFAULT_TITLE,
+      shape: DEFAULT_SHAPE,
+      color: DEFAULT_COLOR,
+      customColor: DEFAULT_CUSTOM_COLOR
     };
   }
   const params = new URLSearchParams(window.location.search);
   return {
-    title: params.get('title') || 'Page Icon Editor',
-    shape: params.get('shape') || 'circle',
-    color: params.get('color') || '#3b82f6',
-    customColor: params.get('customColor') || ''
+    title: params.get('title') || DEFAULT_TITLE,
+    shape: params.get('shape') || DEFAULT_SHAPE,
+    color: params.get('color') || DEFAULT_COLOR,
+    customColor: params.get('customColor') || DEFAULT_CUSTOM_COLOR
   };
 }
 
@@ -156,9 +161,9 @@ function updateUrl(title: string, shape: string, color: string, customColor: str
   const params = new URLSearchParams();
 
   // Only add non-default values to keep URL clean
-  if (title !== 'Page Icon Editor') params.set('title', title);
-  if (shape !== 'circle') params.set('shape', shape);
-  if (color !== '#3b82f6') params.set('color', color);
+  if (title !== DEFAULT_TITLE) params.set('title', title);
+  if (shape !== DEFAULT_SHAPE) params.set('shape', shape);
+  if (color !== DEFAULT_COLOR) params.set('color', color);
   if (customColor) params.set('customColor', customColor);
 
   const newUrl = params.toString()
@@ -169,49 +174,23 @@ function updateUrl(title: string, shape: string, color: string, customColor: str
 }
 
 export default function Home() {
-  // Use lazy initial state to read URL parameters immediately
-  const [title, setTitle] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const urlTitle = params.get('title') || 'Page Icon Editor';
-      // Set document title immediately
-      document.title = urlTitle;
-      return urlTitle;
-    }
-    return "Page Icon Editor";
-  });
-
-  const [shape, setShape] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('shape') || 'circle';
-    }
-    return "circle";
-  });
-
-  const [color, setColor] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('color') || '#3b82f6';
-    }
-    return "#3b82f6";
-  });
-
-  const [customColor, setCustomColor] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('customColor') || '';
-    }
-    return "";
-  });
+  const [title, setTitle] = useState(DEFAULT_TITLE);
+  const [shape, setShape] = useState(DEFAULT_SHAPE);
+  const [color, setColor] = useState(DEFAULT_COLOR);
+  const [customColor, setCustomColor] = useState(DEFAULT_CUSTOM_COLOR);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const currentColor = customColor || color;
 
 
 
-  // Set loaded state after mount
+  // Read query params after mount so hydration matches the static export.
   useEffect(() => {
+    const params = getUrlParams();
+    setTitle(params.title);
+    setShape(params.shape);
+    setColor(params.color);
+    setCustomColor(params.customColor);
     setIsLoaded(true);
   }, []);
 
@@ -245,10 +224,10 @@ export default function Home() {
   }, [shape, currentColor]);
 
   const handleReset = () => {
-    setTitle("Page Icon Editor");
-    setShape("circle");
-    setColor("#3b82f6");
-    setCustomColor("");
+    setTitle(DEFAULT_TITLE);
+    setShape(DEFAULT_SHAPE);
+    setColor(DEFAULT_COLOR);
+    setCustomColor(DEFAULT_CUSTOM_COLOR);
   };
 
   const copyCurrentUrl = () => {
