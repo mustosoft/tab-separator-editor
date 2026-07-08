@@ -187,6 +187,7 @@ export default function Home() {
   // Read query params after mount so hydration matches the static export.
   useEffect(() => {
     const params = getUrlParams();
+    document.title = params.title;
     setTitle(params.title);
     setShape(params.shape);
     setColor(params.color);
