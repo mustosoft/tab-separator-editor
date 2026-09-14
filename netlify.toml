@@ -8,5 +8,13 @@
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
+[[edge_functions]]
+  path = "/"
+  function = "shared-title"
+
+[[edge_functions]]
+  path = "/index.html"
+  function = "shared-title"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"

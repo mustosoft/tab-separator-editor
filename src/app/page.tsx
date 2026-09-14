@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DEFAULT_TITLE } from "@/lib/page-title";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,6 @@ const PRESET_COLORS = [
   "#000000", // black
 ];
 
-const DEFAULT_TITLE = "Page Icon Editor";
 const DEFAULT_SHAPE = "circle";
 const DEFAULT_COLOR = "#3b82f6";
 const DEFAULT_CUSTOM_COLOR = "";
@@ -148,7 +148,7 @@ function getUrlParams() {
   }
   const params = new URLSearchParams(window.location.search);
   return {
-    title: params.get('title') || DEFAULT_TITLE,
+    title: params.get('title') ?? DEFAULT_TITLE,
     shape: params.get('shape') || DEFAULT_SHAPE,
     color: params.get('color') || DEFAULT_COLOR,
     customColor: params.get('customColor') || DEFAULT_CUSTOM_COLOR
@@ -186,26 +186,28 @@ export default function Home() {
 
   // Read query params after mount so hydration matches the static export.
   useEffect(() => {
-    const params = getUrlParams();
-    document.title = params.title;
-    setTitle(params.title);
-    setShape(params.shape);
-    setColor(params.color);
-    setCustomColor(params.customColor);
-    setIsLoaded(true);
+    const applyUrlState = () => {
+      const params = getUrlParams();
+      document.title = params.title;
+      setTitle(params.title);
+      setShape(params.shape);
+      setColor(params.color);
+      setCustomColor(params.customColor);
+      setIsLoaded(true);
+    };
+
+    applyUrlState();
+    window.addEventListener("popstate", applyUrlState);
+    return () => window.removeEventListener("popstate", applyUrlState);
   }, []);
 
-  // Update URL whenever state changes (but only after initial load)
+  // Publish URL and title together, only after shared settings have been read.
   useEffect(() => {
     if (isLoaded) {
       updateUrl(title, shape, color, customColor);
+      document.title = title;
     }
   }, [title, shape, color, customColor, isLoaded]);
-
-  // Update document title whenever title state changes
-  useEffect(() => {
-    document.title = title;
-  }, [title]);
 
   useEffect(() => {
     // Update favicon

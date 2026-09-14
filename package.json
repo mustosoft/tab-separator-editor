@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "bunx tsc --noEmit && next lint",
+    "test": "bun test tests/shared-title.test.mjs",
+    "test:e2e": "bun run build && playwright test",
     "format": "bunx biome format --write"
   },
   "dependencies": {
@@ -27,6 +29,8 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@eslint/eslintrc": "^3.3.1",
+    "@netlify/edge-functions": "^4.0.0",
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20.17.50",
     "@types/react": "^18.3.22",
     "@types/react-dom": "^18.3.7",

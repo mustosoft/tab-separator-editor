@@ -1,5 +1,35 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Shared tab titles
+
+On Netlify, `netlify/edge-functions/shared-title.ts` puts the URL's `title` parameter
+into the initial HTML response. This makes the tab title available as soon as the
+browser parses the title tag, including when JavaScript is delayed or disabled.
+The site still builds as a static export in `out/`; deploy the repository with
+`netlify.toml` so the edge function is included.
+
+An inline head script keeps the title synchronized during hydration and history
+navigation. It has no timeout and follows title edits and resets through the URL.
+When serving only `out/` on another static host, the title needs this inline script;
+the initial response there still contains the default title. No site can set a
+tab's label before the browser receives its response.
+
+This uses Netlify's documented [response transformation API](https://docs.netlify.com/build/edge-functions/api/#modify-a-response).
+
+## Verification
+
+```bash
+bun install --frozen-lockfile
+bun run lint
+bun run test
+bunx playwright install chromium --only-shell
+bun run test:e2e
+```
+
+Browser tests use the production export and actual edge handler locally, covering
+disabled or delayed JavaScript, edits, resets, reloads, history, and title escaping.
+Netlify deployment behavior still needs a check after deployment.
+
 ## Getting Started
 
 First, run the development server:
